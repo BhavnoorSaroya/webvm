@@ -1,0 +1,30 @@
+# Use the latest LTS Ubuntu
+FROM --platform=amd64 ubuntu:22.04
+
+# Avoid interactive prompts
+ARG DEBIAN_FRONTEND=noninteractive
+
+# Update, upgrade, install packages, and clean in one layer
+RUN apt-get update && apt-get -y upgrade && \
+    apt-get install -y --no-install-recommends \
+        apt-utils gcc python3 python3-pip vim unzip ruby nodejs \
+        fakeroot dbus whiptail hexedit patch manpages \
+        file luajit make lua5.4 dialog curl less cowsay netcat-openbsd && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Create a non-root user
+RUN useradd -m -s /bin/bash user && echo "user:password" | chpasswd
+
+# Copy example files and set permissions
+COPY --chown=user:user ./examples /home/user/examples
+RUN chmod -R +x /home/user/examples/lua
+
+# Set working directory and environment variables
+WORKDIR /home/user/
+ENV HOME="/home/user" TERM="xterm" USER="user" SHELL="/bin/bash" EDITOR="vim" LANG="en_US.UTF-8" LC_ALL="C"
+
+# Set root password (optional)
+RUN echo 'root:password' | chpasswd
+
+# Default command
+CMD [ "/bin/bash" ]
