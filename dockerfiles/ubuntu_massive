@@ -1,18 +1,18 @@
-# Use the latest LTS Ubuntu
-FROM --platform=amd64 ubuntu:22.04
+# Use 32-bit Ubuntu 20.04
+FROM --platform=i386 ubuntu:20.04
 
 # Avoid interactive prompts
 ARG DEBIAN_FRONTEND=noninteractive
 
-# Update, upgrade, install packages, and clean in one layer
+# Update, upgrade, install packages, clean in one layer
 RUN apt-get update && apt-get -y upgrade && \
     apt-get install -y --no-install-recommends \
         apt-utils gcc python3 python3-pip vim unzip ruby nodejs \
         fakeroot dbus whiptail hexedit patch manpages \
-        file luajit make lua5.4 dialog curl less cowsay netcat-openbsd && \
+        file luajit make lua5.3 dialog curl less cowsay netcat-openbsd && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Create a non-root user
+# Create non-root user
 RUN useradd -m -s /bin/bash user && echo "user:password" | chpasswd
 
 # Copy example files and set permissions
